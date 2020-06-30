@@ -4,12 +4,19 @@ use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ChecklistItem {
+  title: String
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Todo {
   title: String,
   notes: Option<String>,
   when: Option<String>,
   deadline: Option<String>,
   tags: Vec<String>,
+  #[serde(rename = "checklist-items")] 
+  checklist_items: Vec<Item>,
   #[serde(rename = "list-id")] 
   list_id: Option<String>,
   list: Option<String>,
@@ -46,7 +53,10 @@ pub enum ItemType {
   Project(Project),
 
   #[serde(rename = "heading")] 
-  Heading(Heading)
+  Heading(Heading),
+
+  #[serde(rename = "checklist-item")] 
+  ChecklistItem(ChecklistItem)
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -65,10 +75,13 @@ pub struct Item {
   id: Option<String>,
 }
 
-pub fn project(title: &str, when: &str, items: Vec<Item>) -> Item {
+// TODO: use the builder pattern instead
+
+pub fn project(title: &str, when: &str, notes: &str, items: Vec<Item>) -> Item {
   Item { 
     item_type: ItemType::Project(Project { 
       title: title.to_string(),
+      notes: Some(notes.to_string()),
       items: items,
       when: Some(when.to_string()),
       ..Project::default()
@@ -78,11 +91,35 @@ pub fn project(title: &str, when: &str, items: Vec<Item>) -> Item {
   }
 }
 
-pub fn todo(title: &str) -> Item {
+pub fn todo(title: &str, note: Option<&str>) -> Item {
   Item { 
     item_type: ItemType::Todo(Todo { 
       title: title.to_string(),
+      notes: note.map(String::from),
       ..Todo::default()
+    }),
+    id: None,
+    operation: Operation::Create
+  }
+}
+
+pub fn todo_checklist(title: &str, note: Option<&str>, checklist: Vec<Item>) -> Item {
+  Item { 
+    item_type: ItemType::Todo(Todo { 
+      title: title.to_string(),
+      notes: note.map(String::from),
+      checklist_items: checklist,
+      ..Todo::default()
+    }),
+    id: None,
+    operation: Operation::Create
+  }
+}
+
+pub fn checklist_item(title: &str) -> Item {
+  Item {
+    item_type: ItemType::ChecklistItem(ChecklistItem {
+      title: title.to_string(),
     }),
     id: None,
     operation: Operation::Create
