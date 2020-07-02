@@ -3,10 +3,11 @@ mod api;
 use api::*;
 use chrono::Local;
 
-pub fn daily() -> Vec<Item> {
+pub fn work_daily() -> Vec<Item> {
     let todos = vec![
         heading("Goals"),
         todo("Clear Things inbox + plan for the day", None),
+        heading("Learning"),
         todo(
             "Learning plan for the day",
             Some("https://timothyandrew.net/learning"),
@@ -31,8 +32,8 @@ pub fn daily() -> Vec<Item> {
     let day = now.format("%A");
     let date = now.format("%Y-%m-%d");
 
-    let notes = format!("Today is {}!\n\n<calendar goes here>", day);
-    let project = project(&format!("🔥 {}", date), "today", &notes, todos);
+    let notes = format!("- Today is {}!\n- <calendar goes here>", day);
+    let project = project(&format!("Work Daily: {}", date), "today", &notes, todos);
 
     vec![project]
 }

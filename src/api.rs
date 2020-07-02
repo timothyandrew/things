@@ -75,7 +75,7 @@ pub struct Item {
     id: Option<String>,
 }
 
-// TODO: use the builder pattern instead
+// TODO: use the builder pattern (or macros) instead
 
 pub fn project(title: &str, when: &str, notes: &str, items: Vec<Item>) -> Item {
     Item {
