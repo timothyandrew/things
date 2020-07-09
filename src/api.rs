@@ -2,7 +2,6 @@
 use serde;
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ChecklistItem {
     title: String,
