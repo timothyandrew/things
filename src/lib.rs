@@ -36,6 +36,11 @@ fn compile(items: Vec<Item>) -> Result<String, Box<dyn Error>> {
 
 #[wasm_bindgen]
 pub fn work_daily(date: Option<ThingsDate>) -> String {
+    let when = match date {
+        Some(ThingsDate::Tomorrow) => "tomorrow",
+        Some(ThingsDate::Today) | _  => "today"
+    };
+
     let date = match date {
         Some(ThingsDate::Today) => Local::today(),
         Some(ThingsDate::Tomorrow) => Local::today() + Duration::days(1),
@@ -80,7 +85,7 @@ pub fn work_daily(date: Option<ThingsDate>) -> String {
     };
 
 
-    let project = project(&format!("Daily: {}", iso), "today", &notes, todos);
+    let project = project(&format!("Daily: {}", iso), when, &notes, todos);
 
     compile(vec![project]).unwrap()
 }
